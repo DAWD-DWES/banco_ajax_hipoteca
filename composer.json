@@ -1,0 +1,22 @@
+{
+    "name": "dawd/dwes05_banco",
+    "description": "Aplicación de operación bancaria",
+    "type": "project",
+    "require": {
+        "fakerphp/faker": "^1.23",
+        "eftec/bladeone": "^4.11",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/",
+            "TipoCambio\\": "soapdivisas/src/",
+            "Hipoteca\\": "soaphipoteca/src"
+        }
+    },
+    "require-dev": {
+        "wsdl2phpgenerator/wsdl2phpgenerator": "^3.4",
+        "php2wsdl/php2wsdl": "^0.7.0"
+    }
+}
