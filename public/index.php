@@ -1,7 +1,7 @@
 <?php
 
 require_once '../vendor/autoload.php';
-require_once '../src/error_handler.php';
+include_once '../src/error_handler.php';
 require_once '../src/cargadatos.php';
 
 use App\bd\BD;
