@@ -25,9 +25,13 @@ register_shutdown_function(function () {
 
         error_log("Error fatal: {$error['message']} en {$error['file']} en línea {$error['line']}");
         http_response_code(500);
-        echo "<h1>500 Error Interno del Servidor</h1>
+        if (filter_var(ini_get('display_errors'), FILTER_VALIDATE_BOOLEAN)) {
+            echo (($error['message'] ?? '') . ", " . ($error['file'] ?? '') . ", " . ($error['line'] ?? ''));
+        } else {
+            echo "<h1>500 Error Interno del Servidor</h1>
 Ha ocurrido un error interno del servidor.<br>
 Por favor, inténtelo más tarde.";
+        }
     }
 });
 
