@@ -1,51 +1,53 @@
 <?php
+namespace App\BD;
 
-namespace App\bd;
-
+use Dotenv\Dotenv;
 use PDO;
+use PDOException;
+use Exception;
 
-/**
- * Clase que representa el singleton de la conexión a la Base de Datos
- */
 class BD {
-    /*
-     * @var ?PDO $bd Almacena la única instancia PDO de conexión
-     */
 
-    protected static ?PDO $bd = null;
+    private static ?BD $instance = null; // Singleton de la clase
+    private ?PDO $conexion = null; // Conexión PDO
 
-    /**
-     * Constructor privado de la clase BD
-     * 
-     * @param string $host Nombre del Host donde reside el servidor de la base de datos
-     * @param string $port Número del puerto donde escucha el servidor de la base de datos
-     * @param string $database Nombre de la base de datos del juego
-     * @param string $usuario Nombre del usuario para acceder a la base de datos 
-     * @param string $passwrod Password del usuario
-     * 
-     * @returns void
-     */
-    private function __construct(string $host, string $port, string $database, string $usuario, string $password) {
-        self::$bd = new \PDO("mysql:host=" . "$host:$port" . ";dbname=" . $database, $usuario, $password);
-        self::$bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        self::$bd->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
-    }
+    private function __construct() {
+        try {
+            // Cargar .env si aún no está cargado
+            if (!isset($_ENV['DB_HOST'])) {
+                $dotenv = Dotenv::createImmutable(__DIR__ . "/../../");
+                $dotenv->safeLoad(); // Usa safeLoad para evitar errores si falta el .env
+            }
 
-    /**
-     * Obtiene una instancia del singleton
-     * 
-     * @param string $host Nombre del Host donde reside el servidor de la base de datos
-     * @param string $port Número del puerto donde escucha el servidor de la base de datos
-     * @param string $database Nombre de la base de datos del juego
-     * @param string $usuario Nombre del usuario para acceder a la base de datos 
-     * @param string $passwrod Password del usuario
-     * 
-     * @returns void
-     */
-    public static function getConexion(string $host, string $port, string $database, string $usuario, string $password) {
-        if (!self::$bd) {
-            new BD($host, $port, $database, $usuario, $password);
+            $host = $_ENV['DB_HOST'];
+            $database = $_ENV['DB_DATABASE'];
+            $username = $_ENV['DB_USUARIO'];
+            $password = $_ENV['DB_PASSWORD'];
+
+            // Crear la conexión PDO
+            $this->conexion = new PDO(
+                "mysql:host=$host;dbname=$database;charset=utf8mb4",
+                $username,
+                $password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+                ]
+            );
+        } catch (PDOException $e) {
+            throw new Exception("Error de conexión: " . $e->getMessage(), (int)$e->getCode());
         }
-        return self::$bd;
     }
+
+    public static function getConexion(): PDO {
+        if (self::$instance === null) {
+            self::$instance = new BD();
+        }
+        return self::$instance->conexion;
+    }
+
+    // Evitar la clonación del objeto
+    public function __clone() {}
+
+    // Evitar la deserialización del objeto
+    public function __wakeup() {}
 }
