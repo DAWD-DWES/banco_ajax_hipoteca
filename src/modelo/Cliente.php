@@ -11,9 +11,9 @@ class Cliente {
 
     /**
      * ID del cliente
-     * @var string
+     * @var int
      */
-    private string $id;
+    private int $id;
 
     /**
      * DNI del cliente
@@ -41,9 +41,9 @@ class Cliente {
 
     /**
      * Fecha de nacimiento del cliente
-     * @var DateTime
+     * @var string
      */
-    private $fechaNacimiento;
+    private string $fechaNacimiento;
 
     /**
      * Teléfono del cliente
@@ -57,14 +57,14 @@ class Cliente {
      */
     private array $idCuentas;
 
-    public function __construct(string $dni = null, string $nombre = null, string $apellido1 = null, string $apellido2 = null, string $telefono = null, string $fechaNacimiento = null) {
+    public function __construct(string $dni = null, string $nombre = null, string $apellido1 = null, string $apellido2 = null, string $telefono = null, Datetime $fechaNacimiento = null) {
         if (func_num_args() > 0) {
             $this->setDni($dni);
             $this->setNombre($nombre);
             $this->setApellido1($apellido1);
             $this->setApellido2($apellido2);
             $this->setTelefono($telefono);
-            $this->setFechaNacimiento(new DateTime($fechaNacimiento));
+            $this->setFechaNacimiento($fechaNacimiento);
         }
         $this->setIdCuentas([]);
     }
@@ -94,60 +94,62 @@ class Cliente {
     }
 
     //Cuidado con el tipo
-    public function getFechaNacimiento() {
-        return $this->fechaNacimiento;
+    public function getFechaNacimiento(): DateTime {
+        return new DateTime($this->fechaNacimiento);
     }
 
     public function getIdCuentas(): array {
         return $this->idCuentas;
     }
 
-    public function setId(int $id) {
+    public function setId(int $id): void {
         $this->id = $id;
     }
 
-    public function setDni(string $dni) {
+    public function setDni(string $dni): void {
         $this->dni = $dni;
     }
 
-    public function setNombre(string $nombre) {
+    public function setNombre(string $nombre): void {
         $this->nombre = $nombre;
     }
 
-    public function setApellido1(string $apellido1) {
+    public function setApellido1(string $apellido1): void {
         $this->apellido1 = $apellido1;
     }
 
-    public function setApellido2(string $apellido2) {
+    public function setApellido2(string $apellido2): void {
         $this->apellido2 = $apellido2;
     }
 
-    public function setTelefono(string $telefono) {
+    public function setTelefono(string $telefono): void {
         $this->telefono = $telefono;
     }
 
-    public function setFechaNacimiento(DateTime $fechaNacimiento) {
-        $this->fechaNacimiento = $fechaNacimiento;
+    public function setFechaNacimiento(DateTime $fechaNacimiento): void {
+        $this->fechaNacimiento = $fechaNacimiento->format('Y-m-d');
     }
 
-    public function setIdCuentas(array $idCuentas) {
+    public function setIdCuentas(array $idCuentas): void {
         $this->idCuentas = $idCuentas;
     }
 
-    public function altaCuenta(string $idCuenta) {
+    public function altaCuenta(string $idCuenta): void {
         $this->idCuentas[] = $idCuenta;
     }
 
-    public function tieneCuenta(string $idCuenta) {
-        return (array_search($idCuenta, $this->getCuentas()) !== false);
+    public function existeIdCuenta(string $idCuenta): bool {
+        $clave = array_search($idCuenta, $this->getIdCuentas());
+        // Si la clave existe en el array, elimina el elemento
+        return ($clave !== false);
     }
 
-    public function bajaCuenta(string $idCuenta) {
-        $clave = array_search($idCuenta, $this->getCuentas());
+    public function bajaCuenta(string $idCuenta): void {
+        $clave = array_search($idCuenta, $this->getIdCuentas());
 // Si la clave existe en el array, elimina el elemento
         if ($clave !== false) {
-            unset($this->getCuentas[$clave]);
+            unset($this->getIdCuentas[$clave]);
         }
-        $this->setCuentas(array_values($this->getCuentas()));
+        $this->setIdCuentas(array_values($this->getIdCuentas()));
     }
 }

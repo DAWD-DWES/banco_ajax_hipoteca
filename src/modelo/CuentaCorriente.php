@@ -2,21 +2,34 @@
 
 namespace App\modelo;
 
+use App\modelo\Operacion;
 use App\modelo\Cuenta;
-use App\dao\OperacionDAO;
 
 /**
  * Clase CuentaCorriente 
  */
-class CuentaCorriente extends Cuenta implements IProductoBancario {
+class CuentaCorriente extends Cuenta {
 
-    public function __construct(OperacionDAO $operacionDAO, TipoCuenta $tipo, string $idCliente) {
-        parent::__construct($operacionDAO, $tipo, $idCliente);
+    public function __construct(int $idCliente, float $saldo = 0, string $fechaCreacion = "now") {
+        parent::__construct($idCliente, TipoCuenta::CORRIENTE, $saldo, $fechaCreacion);
     }
 
-    public function aplicaComision($comision, $minSaldo): void {
+    /**
+     * 
+     * @param type $cantidad Cantidad de dinero a retirar
+     * @param type $descripcion Descripcion del debito
+     */
+    public function debito(float $cantidad, string $descripcion): Operacion {
+        $operacion = new Operacion($this->getId(), TipoOperacion::DEBITO, $cantidad, $descripcion);
+        $this->agregaOperacion($operacion);
+        $this->setSaldo($this->getSaldo() - $cantidad);
+        return $operacion;
+    }
+
+    public function aplicaComision($comision, $minSaldo): ?Operacion {
         if ($this->getSaldo() < $minSaldo) {
-            $this->debito($comision, "Cargo de comisión de mantenimiento");
+            $operacion = $this->debito($comision, "Cargo de comisión de mantenimiento");
         }
+        return $operacion ?? null;
     }
 }

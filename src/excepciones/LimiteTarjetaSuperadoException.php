@@ -2,11 +2,11 @@
 
 namespace App\excepciones;
 
-use Exception;
+use \Exception;
 
 class LimiteTarjetaSuperadoException extends Exception {
 
-    private $numTarjeta;
+    private string $numTarjeta;
 
     public function __construct(string $numTarjeta) {
         $this->numTarjeta = $numTarjeta;
@@ -14,4 +14,6 @@ class LimiteTarjetaSuperadoException extends Exception {
         $message = "Limite de la tarjeta $numTarjeta superado";
         parent::__construct($message);
     }
+    
+    
 }

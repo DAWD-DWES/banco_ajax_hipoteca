@@ -2,14 +2,15 @@
 
 namespace App\excepciones;
 
-use Exception;
+use \Exception;
 
-class CuentaNoEncontradaException extends Exception {
 
-    private $dni;
-    private $idCuenta;
+class CuentaNoPerteneceClienteException extends Exception {
 
-    public function __construct(string $dni, string $idCuenta) {
+    private string $dni;
+    private int $idCuenta;
+
+    public function __construct(string $dni, int $idCuenta) {
         $this->dni = $dni;
         $this->idCuenta = $idCuenta;
 
@@ -17,11 +18,10 @@ class CuentaNoEncontradaException extends Exception {
         parent::__construct($message);
     }
 
-    public function getIdCuenta() {
+    public function getIdCuenta(): int {
         return $this->idCuenta;
     }
-
-    public function getdni() {
+    public function getdni(): string {
         return $this->dni;
     }
 }

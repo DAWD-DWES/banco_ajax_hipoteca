@@ -2,20 +2,16 @@
 
 namespace App\modelo;
 
-use App\dao\OperacionDAO;
-use App\excepciones\SaldoInsuficienteException;
-use DateTime;
+use \DateTime;
 
 /**
  * Clase Cuenta 
  */
-class Cuenta implements IProductoBancario {
-
-    private OperacionDAO $operacionDAO;
+abstract class Cuenta implements IProductoBancario {
 
     /**
      * Id de la cuenta
-     * @var string
+     * @var int
      */
     private int $id;
 
@@ -26,20 +22,20 @@ class Cuenta implements IProductoBancario {
     private float $saldo;
 
     /**
-     * Fecha y hora de creación de la cuenta
-     * @var DateTime
+     * Timestamp de Fecha y hora de creación de la cuenta
+     * @var string
      */
-    private DateTime $fechaCreacion;
+    private string $fechaCreacion;
 
     /**
      * Tipo de la cuenta
-     * @var TipoCuenta
+     * @var string
      */
-    private TipoCuenta $tipo;
+    private string $tipo;
 
     /**
      * Id del cliente dueño de la cuenta
-     * @var string
+     * @var int
      */
     private int $idCliente;
 
@@ -49,18 +45,17 @@ class Cuenta implements IProductoBancario {
      */
     private array $operaciones;
 
-    public function __construct(OperacionDAO $operacionDAO, TipoCuenta $tipo, string $idCliente) {
+    public function __construct(int $idCliente, TipoCuenta $tipo, float $saldo = 0, string $fechaCreacion = 'now') {
         if (func_num_args() > 0) {
-            $this->operacionDAO = $operacionDAO;
-            $this->tipo = $tipo;
-            $this->setSaldo(0);
+            $this->setTipo($tipo);
+            $this->setSaldo($saldo);
             $this->setOperaciones([]);
-            $this->setFechaCreacion(new DateTime());
+            $this->setFechaCreacion(new DateTime($fechaCreacion));
             $this->setIdCliente($idCliente);
         }
     }
 
-    public function getId(): string {
+    public function getId(): int {
         return $this->id;
     }
 
@@ -69,14 +64,15 @@ class Cuenta implements IProductoBancario {
     }
 
     public function getFechaCreacion(): DateTime {
-        return $this->fechaCreacion;
+        $fecha = new DateTime($this->fechaCreacion);
+        return $fecha;
     }
 
     public function getTipo(): TipoCuenta {
-        return $this->tipo;
+        return TipoCuenta::from($this->tipo);
     }
 
-    public function getIdCliente(): string {
+    public function getIdCliente(): int {
         return $this->idCliente;
     }
 
@@ -84,27 +80,27 @@ class Cuenta implements IProductoBancario {
         return $this->operaciones;
     }
 
-    public function setId($id) {
+    public function setId(int $id): void {
         $this->id = $id;
     }
 
-    public function setSaldo($saldo) {
+    public function setSaldo(float $saldo): void {
         $this->saldo = $saldo;
     }
 
-    public function setFechaCreacion($fechaCreacion) {
-        $this->fechaCreacion = $fechaCreacion;
+    public function setFechaCreacion(DateTime $fechaCreacion): void {
+        $this->fechaCreacion = $fechaCreacion->format('Y-m-d H:i:s');
     }
 
-    public function setIdCliente($idCliente) {
+    public function setIdCliente(int $idCliente): void {
         $this->idCliente = $idCliente;
     }
 
-    public function setTipoCuenta($tipoCuenta) {
-        $this->tipoCuenta = $tipoCuenta;
+    public function setTipo(TipoCuenta $tipo): void {
+        $this->tipo = $tipo->value;
     }
 
-    public function setOperaciones(array $operaciones) {
+    public function setOperaciones(array $operaciones): void {
         $this->operaciones = $operaciones;
     }
 
@@ -113,12 +109,12 @@ class Cuenta implements IProductoBancario {
      * @param type $cantidad Cantidad de dinero
      * @param type $descripcion Descripción del ingreso
      */
-    public function ingreso(float $cantidad, string $descripcion): void {
+    public function ingreso(float $cantidad, string $descripcion): Operacion {
         if ($cantidad > 0) {
             $operacion = new Operacion($this->getId(), TipoOperacion::INGRESO, $cantidad, $descripcion);
-            $this->operacionDAO->crear($operacion);
             $this->agregaOperacion($operacion);
             $this->setSaldo($this->getSaldo() + $cantidad);
+            return $operacion;
         }
     }
 
@@ -126,27 +122,19 @@ class Cuenta implements IProductoBancario {
      * 
      * @param type $cantidad Cantidad de dinero a retirar
      * @param type $descripcion Descripcion del debito
-     * @throws SaldoInsuficienteException
+     *
      */
-    public function debito(float $cantidad, string $descripcion): void {
-        if ($cantidad <= $this->getSaldo()) {
-            $operacion = new Operacion($this->getId(), TipoOperacion::DEBITO, $cantidad, $descripcion);
-            $this->operacionDAO->crear($operacion);
-            $this->agregaOperacion($operacion);
-            $this->setSaldo($this->getSaldo() - $cantidad);
-        } else {
-            throw new SaldoInsuficienteException($this->getId());
-        }
-    }
+    abstract public function debito(float $cantidad, string $descripcion): Operacion;
 
-    public function __toString() {
+    public function __toString(): string {
         $saldoFormatted = number_format($this->getSaldo(), 2); // Formatear el saldo con dos decimales
         $operacionesStr = implode("</br>", array_map(fn($operacion) => "{$operacion->__toString()}", $this->getOperaciones())); // Convertir las operaciones en una cadena separada por saltos de línea
 
         return "Cuenta ID: {$this->getId()}</br>" .
-                "Tipo Cuenta: " . get_class($this) . "</br>" .
-                // "Cliente ID: {$this->getIdCliente()}</br>" .
+                "Tipo Cuenta: " . ($this->getTipo())->value . "</br>" .
+                "Cliente ID: {$this->getIdCliente()}</br>" .
                 "Saldo: $saldoFormatted</br>" .
+                "Fecha Creación: {$this->getFechaCreacion()->format('Y-m-d')}</br>" .
                 "$operacionesStr";
     }
 
@@ -154,7 +142,7 @@ class Cuenta implements IProductoBancario {
      * Agrega operación a la lista de operaciones de la cuenta
      * @param type $operacion Operación a añadir
      */
-    private function agregaOperacion(Operacion $operacion) {
+    protected function agregaOperacion(Operacion $operacion): void {
         $this->operaciones[] = $operacion;
     }
 }

@@ -19,7 +19,8 @@ function cargaDatos($banco) {
         $numCuentas = rand(1, 3);
         for ($numCuentas = 0; $numCuentas < 3; $numCuentas++) {
             $tipoCuenta = rand(0, 1) ? TipoCuenta::CORRIENTE : TipoCuenta::AHORROS;
-            $idCuenta = $banco->altaCuentaCliente($datosCliente['dni'], $tipoCuenta);
+            $idCuenta = ($tipoCuenta === TipoCuenta::CORRIENTE) ? $banco->altaCuentaCorrienteCliente($datosCliente['dni']) :
+                    $banco->altaCuentaAhorrosCliente($datosCliente['dni'], rand(0, 1) ? true : false,);
             $cantidad = rand(0, 500);
             $banco->ingresoCuentaCliente($datosCliente['dni'], $idCuenta, $cantidad, "Ingreso de $cantidad € en la cuenta");
             // Realizar operaciones de ingreso en las cada cuenta

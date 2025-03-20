@@ -3,9 +3,7 @@
 require_once '../vendor/autoload.php';
 require_once '../src/error_handler.php';
 
-use App\modelo\{
-    GestorHipotecasSOAP
-};
+use App\servicios\GestorHipotecasSOAP;
 use eftec\bladeone\BladeOne;
 
 // Inicializa el acceso a las variables de entorno

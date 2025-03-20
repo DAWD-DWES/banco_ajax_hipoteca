@@ -3,9 +3,9 @@
 require_once '../vendor/autoload.php';
 require_once '../src/error_handler.php';
 
-use App\modelo\{
-    GestorDivisasSOAP
-};
+
+use App\servicios\GestorDivisasSOAP;
+
 use eftec\bladeone\BladeOne;
 
 // Inicializa el acceso a las variables de entorno
@@ -17,7 +17,6 @@ $blade = new BladeOne($vistas, $cache, BladeOne::MODE_DEBUG);
 $blade->setBaseURL("http://{$_SERVER['SERVER_NAME']}:{$_SERVER['SERVER_PORT']}/");
 
 $gestorDivisas = new GestorDivisasSOAP();
-
 
 if (filter_has_var(INPUT_GET, 'petconsultadivisa')) {
     $divisas = $gestorDivisas->listaDivisasDisponibles();

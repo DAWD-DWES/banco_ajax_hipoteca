@@ -1,13 +1,13 @@
 <?php
 
+
 namespace App\excepciones;
 
-use Exception;
+use \Exception;
 
 class ClienteNoEncontradoException extends Exception {
-
-    private $idCliente;
-
+    private string $idCliente;
+    
     public function __construct(string $idCliente) {
         $this->idCliente = $idCliente;
 
@@ -15,7 +15,7 @@ class ClienteNoEncontradoException extends Exception {
         parent::__construct($message);
     }
 
-    public function getIdCliente() {
+    public function getIdCliente(): string {
         return $this->idCliente;
     }
 }

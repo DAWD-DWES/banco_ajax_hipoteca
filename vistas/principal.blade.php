@@ -1,6 +1,11 @@
 @extends('app')
 @section('contenido')
-@parent
+@component('componentes.buscador', ['actionUrl' => '/index.php', 'placeholder' => 'Buscar por DNI de Cliente', 
+'fieldName' => 'dnicliente', 'info' => 'infocliente', 'err' => $errorCliente ?? false, 'valor' => $dniCliente ?? ""])
+@endcomponent
+@component('componentes.buscador', ['actionUrl' => '/index.php', 'placeholder' => 'Buscar por Id de Cuenta', 
+'fieldName' => 'idcuenta', 'info' => 'infocuenta', 'err' => $errorCuenta ?? false])
+@endcomponent
 <div id="carouselExampleIndicators" class="carousel slide m-5" data-bs-ride="carousel">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>

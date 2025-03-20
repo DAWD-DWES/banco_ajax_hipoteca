@@ -1,6 +1,6 @@
 <?php
 
-namespace App\modelo;
+namespace App\servicios;
 
 use SoapClient;
 use Hipoteca\CalculoHipotecaService;

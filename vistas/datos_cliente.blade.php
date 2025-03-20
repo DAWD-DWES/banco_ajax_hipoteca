@@ -1,7 +1,5 @@
 @extends('app')
-
 @section('contenido')
-@parent
 <div class="my-3">
     <h1>Información del Cliente</h1>
     <p><strong>Nombre:</strong> {{ $cliente->getNombre() .  " " . $cliente->getApellido1() . " " . $cliente->getApellido2() }}</p>
@@ -9,6 +7,7 @@
     <p><strong>Teléfono:</strong> {{ $cliente->getTelefono() }}</p>
     <!-- Añade más campos de información del cliente según sea necesario -->
 </div>
+
 <div class="cuentas-lista my-3">
     <h2>Cuentas del Cliente</h2>
     @if(count($cuentas) > 0)

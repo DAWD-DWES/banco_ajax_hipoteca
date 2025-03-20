@@ -5,7 +5,7 @@ namespace App\modelo;
 use App\modelo\IProductoBancario;
 
 /**
- * Clase Cuenta 
+ * Clase TarjetaCredito 
  */
 class TarjetaCredito implements IProductoBancario {
 
@@ -31,6 +31,8 @@ class TarjetaCredito implements IProductoBancario {
      * Id del cliente de la tarjeta
      * @var string dni
      */
+
+
     public function __construct(float $limite) {
         $this->setnumero(sprintf('%04d', mt_rand(0, 9999)) . " " . sprintf('%04d', mt_rand(0, 9999)) . " " . sprintf('%04d', mt_rand(0, 9999)) . " " . sprintf('%04d', mt_rand(0, 9999)));
         $this->setLimite($limite);
@@ -73,7 +75,7 @@ class TarjetaCredito implements IProductoBancario {
      * @param type $cantidad Cantidad de dinero
      * @param type $descripcion Descripción del ingreso
      */
-    public function ingreso(float $cantidad, string $descripcion): void {
+    public function ingreso(float $cantidad, string $descripcion): Operacion {
         if ($cantidad > 0) {
             $this->setLimite($this->getLimite() + $cantidad);
         }
@@ -85,7 +87,7 @@ class TarjetaCredito implements IProductoBancario {
      * @param type $descripcion Descripcion del debito
      * @throws SaldoInsuficienteException
      */
-    public function debito(float $cantidad, string $descripcion): void {
+    public function debito(float $cantidad, string $descripcion): Operacion {
         if ($cantidad <= $this->limite()) {
             $this->setLimite($this->getLimite() - $cantidad);
         } else {
@@ -93,7 +95,7 @@ class TarjetaCredito implements IProductoBancario {
         }
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return "Num Tarjeta: {$this->getNumero()}</br>" .
                 "Limite: {$this->getLimite()}</br>";
     }
