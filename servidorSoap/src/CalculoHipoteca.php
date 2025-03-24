@@ -1,21 +1,33 @@
 <?php
 
+require 'CalculoCuotaRequest.php';
+require 'CalculoCuotaResponse.php';
+
+/**
+ * @soap
+ */
 class CalculoHipoteca {
 
     /**
      * @soap
-     * @param float $cantidad
-     * @param int $anyos
-     * @param float $tasaInteresAnual
-     * @return float 
+     * @param CalculoCuotaRequest $peticion 
+     * @return CalculoCuotaResponse
      */
-    public function calculoCuota(float $cantidad, int $anyos, float $tasaInteresAnual): float {
-        $tasaInteresMensual = $tasaInteresAnual / 12 / 100; // Convertimos a decimal y dividimos entre 12
+    public function calculoCuota($peticion): CalculoCuotaResponse {
+        $cantidad = $peticion->cantidad;
+        $anyos = $peticion->anyos;
+        $tasaInteresAnual = $peticion->tasaInteresAnual;
+
+        $tasaInteresMensual = $tasaInteresAnual / 12 / 100;
         $totalPagos = $anyos * 12;
+        if ($tasaInteresMensual == 0.0) {
+            return $cantidad / $totalPagos; // cuota lineal sin interés
+        }
+        $factor = pow(1 + $tasaInteresMensual, $totalPagos);
+        $cuota = $cantidad * ($tasaInteresMensual * $factor) / ($factor - 1);
 
-        // Calculamos la cuota mensual
-        $cuota = $cantidad * ($tasaInteresMensual * pow(1 + $tasaInteresMensual, $totalPagos)) / (pow(1 + $tasaInteresMensual, $totalPagos) - 1);
-
-        return $cuota;
+        $respuesta = new CalculoCuotaResponse();
+        $respuesta->return = $cuota;
+        return $respuesta;
     }
 }

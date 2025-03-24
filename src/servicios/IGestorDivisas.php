@@ -1,6 +1,6 @@
 <?php
 
-namespace App\modelo;
+namespace App\servicios;
 
 /**
  * Interface IGestorDivisas

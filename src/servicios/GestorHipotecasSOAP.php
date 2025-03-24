@@ -2,23 +2,26 @@
 
 namespace App\servicios;
 
-use SoapClient;
-use Hipoteca\CalculoHipotecaService;
+use Hipoteca\CalculoHipotecaServiceClient;
+use Hipoteca\CalculoHipotecaServiceClientFactory;
+use Hipoteca\Type\CalculoCuotaRequest;
+use Hipoteca\Type\CalculoCuotaResponse;
 
 /**
  * Clase GestorDivisasSOAP
  */
 class GestorHipotecasSOAP {
 
-    private SoapClient $servicioHipoteca;
+    private CalculoHipotecaServiceClient $clienteHipoteca;
 
 
     public function __construct() {
-        $this->servicioHipoteca = new CalculoHipotecaService();
+        $this->clienteHipoteca = CalculoHipotecaServiceClientFactory::factory($wsdl = 'http://localhost/servidorSoap/calculohipoteca.wsdl');
     }
 
     public function calculoCuota(float $cantidad, int $anyos, float $tasaInteresAnual): float {
-        $resul = $this->servicioHipoteca->calculoCuota($cantidad, $anyos, $tasaInteresAnual);
-        return $resul;
+        $peticion = new CalculoCuotaRequest($cantidad, $anyos, $tasaInteresAnual);
+        $resultado = $this->clienteHipoteca->calculoCuota($peticion);
+        return $resultado->getReturn();
     }
 }

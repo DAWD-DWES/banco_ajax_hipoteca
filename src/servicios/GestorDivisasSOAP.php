@@ -1,10 +1,11 @@
 <?php
 
-namespace App\modelo;
+namespace App\servicios;
 
-use SoapClient;
-use TipoCambio\{
-    TipoCambio,
+use App\servicios\IGestorDivisas;
+use TipoCambio\TipoCambioClient;
+use TipoCambio\TipoCambioClientFactory;
+use TipoCambio\Type\{
     VariablesDisponibles,
     TipoCambioRangoMoneda,
 };
@@ -16,16 +17,16 @@ use App\modelo\CambioDivisa;
  */
 class GestorDivisasSOAP implements IGestorDivisas {
 
-    private SoapClient $servicioDivisa;
+    private TipoCambioClient $clienteDivisa;
 
     const DIVISAS_DESAPARACIDAS = [1, 4, 6, 8, 11, 12, 13, 14, 27, 28, 42];
 
     public function __construct() {
-        $this->servicioDivisa = new TipoCambio();
+        $this->clienteDivisa = TipoCambioClientFactory::factory($wsdl = 'https://www.banguat.gob.gt/variables/ws/TipoCambio.asmx?WSDL');
     }
 
     public function listaDivisasDisponibles(): ?array {
-        $variablesDisponiblesResponse = $this->servicioDivisa->VariablesDisponibles(new VariablesDisponibles());
+        $variablesDisponiblesResponse = $this->clienteDivisa->VariablesDisponibles(new VariablesDisponibles());
         $divisas = array_filter($variablesDisponiblesResponse->getVariablesDisponiblesResult()->getVariables()->getVariable(),
                 function ($divisa) {
                     return !in_array($divisa->getMoneda(), self::DIVISAS_DESAPARACIDAS);
@@ -37,8 +38,8 @@ class GestorDivisasSOAP implements IGestorDivisas {
         $cambios = [];
         $fechaFinal = $fechaFin ? (new DateTime($fechaFin))->format('d/m/Y') : (new DateTime('hoy'))->format('d/m/Y');
         $fechaInicial = (new DateTime($fechaIni))->format('d/m/Y');
-        $cambiosDivisaOrigen = $this->servicioDivisa->TipoCambioRangoMoneda(new TipoCambioRangoMoneda($fechaInicial, $fechaFinal, $divisaOrigen))->getTipoCambioRangoMonedaResult()->getVars()->getVar();
-        $cambiosDivisaDestino = $this->servicioDivisa->TipoCambioRangoMoneda(new TipoCambioRangoMoneda($fechaInicial, $fechaFinal, $divisaDestino))->getTipoCambioRangoMonedaResult()->getVars()->getVar();
+        $cambiosDivisaOrigen = $this->clienteDivisa->TipoCambioRangoMoneda(new TipoCambioRangoMoneda($fechaInicial, $fechaFinal, $divisaOrigen))->getTipoCambioRangoMonedaResult()->getVars()->getVar();
+        $cambiosDivisaDestino = $this->clienteDivisa->TipoCambioRangoMoneda(new TipoCambioRangoMoneda($fechaInicial, $fechaFinal, $divisaDestino))->getTipoCambioRangoMonedaResult()->getVars()->getVar();
         $divisaOrigenNombre = current(array_filter($this->listaDivisasDisponibles(), function ($variable) use ($divisaOrigen) {
                     return ($variable->getMoneda() == $divisaOrigen);
                 }))->getDescripcion();
