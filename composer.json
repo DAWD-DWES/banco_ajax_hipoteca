@@ -5,10 +5,7 @@
     "require": {
         "fakerphp/faker": "^1.23",
         "eftec/bladeone": "^4.11",
-        "vlucas/phpdotenv": "^5.6",
-        "phpro/soap-client": "3.3.0",
-        "symfony/http-client": "^6.4",
-        "nyholm/psr7": "^1.8"
+        "vlucas/phpdotenv": "^5.6"
     },
     "license": "MIT",
     "autoload": {
@@ -22,5 +19,11 @@
         "allow-plugins": {
             "php-http/discovery": true
         }
+    },
+    "require-dev": {
+        "phpro/soap-client": "3.3.0",
+        "symfony/http-client": "^6.4",
+        "nyholm/psr7": "^1.8",
+        "laminas/laminas-soap": "^2.14"
     }
 }
