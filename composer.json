@@ -1,5 +1,5 @@
 {
-    "name": "dawdistancia/banco_ajax_hipoteca",
+    "name": "dawdistancia/banco_soap_hipoteca",
     "description": "Aplicación de operación bancaria",
     "type": "project",
     "require": {

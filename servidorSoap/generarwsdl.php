@@ -1,14 +1,12 @@
 <?php
-require '../vendor/autoload.php';
+require './vendor/autoload.php';
 
-require './src/CalculoHipoteca.php';
-require_once './src/CalculoCuotaRequest.php';
-
+use ServSOAP\CalculoHipoteca;
 use Laminas\Soap\AutoDiscover;
 
 $autodiscover = new AutoDiscover();
 $autodiscover->setClass(CalculoHipoteca::class)
-             ->setUri('http://localhost/servidorSoap/servidor.php');
+             ->setUri('http://localhost/banco_soap_hipoteca/servidorSoap/servidor.php');
 
 // Obtener el XML del WSDL
 $wsdlXml = $autodiscover->toXml();

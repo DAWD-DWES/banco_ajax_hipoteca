@@ -1,19 +1,17 @@
 <?php
 
-require 'CalculoCuotaRequest.php';
-require 'CalculoCuotaResponse.php';
+namespace ServSOAP;
 
-/**
- * @soap
- */
+use ServSOAP\CalculoCuotaRequest;
+use ServSOAP\CalculoCuotaResponse;
+
 class CalculoHipoteca {
 
     /**
-     * @soap
-     * @param CalculoCuotaRequest $peticion 
-     * @return CalculoCuotaResponse
+     * @param ServSOAP\CalculoCuotaRequest $peticion 
+     * @return ServSOAP\CalculoCuotaResponse
      */
-    public function calculoCuota($peticion): CalculoCuotaResponse {
+    public function calculoCuota($peticion) {
         $cantidad = $peticion->cantidad;
         $anyos = $peticion->anyos;
         $tasaInteresAnual = $peticion->tasaInteresAnual;

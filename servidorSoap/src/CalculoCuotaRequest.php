@@ -1,8 +1,9 @@
 <?php
-/**
- * @soap
- */
+
+namespace ServSOAP;
+
 class CalculoCuotaRequest {
+
     /**
      * @var float
      */
@@ -18,5 +19,3 @@ class CalculoCuotaRequest {
      */
     public $tasaInteresAnual;
 }
-
-

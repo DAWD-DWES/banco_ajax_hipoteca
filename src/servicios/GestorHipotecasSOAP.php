@@ -16,7 +16,7 @@ class GestorHipotecasSOAP {
 
 
     public function __construct() {
-        $this->clienteHipoteca = CalculoHipotecaServiceClientFactory::factory($wsdl = 'http://localhost/servidorSoap/calculohipoteca.wsdl');
+        $this->clienteHipoteca = CalculoHipotecaServiceClientFactory::factory($wsdl = 'http://localhost/banco_soap_hipoteca/servidorSoap/calculohipoteca.wsdl');
     }
 
     public function calculoCuota(float $cantidad, int $anyos, float $tasaInteresAnual): float {

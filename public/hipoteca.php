@@ -4,6 +4,7 @@ require_once '../vendor/autoload.php';
 require_once '../src/error_handler.php';
 
 use App\servicios\GestorHipotecasSOAP;
+
 use eftec\bladeone\BladeOne;
 
 // Inicializa el acceso a las variables de entorno
@@ -23,10 +24,10 @@ if (filter_has_var(INPUT_GET, 'petconsultahipoteca')) {
     $cantidad = filter_input(INPUT_POST, 'cantidad', FILTER_UNSAFE_RAW);
     $anyos = filter_input(INPUT_POST, 'anyos', FILTER_UNSAFE_RAW);
     $tasaInteres = filter_input(INPUT_POST, 'tasainteres', FILTER_UNSAFE_RAW);
-
+    
     $cuota = round($gestorHipotecas->calculoCuota($cantidad, $anyos, $tasaInteres));
-    echo json_encode(['cuota' => round($cuota, 2)]);
+    echo $blade->run('consulta_hipoteca', compact('cantidad', 'anyos', 'tasaInteres', 'cuota', 'consultaCuota'));
 } else {
-    echo json_encode(['error' => 'Información insuficiente para calcular la cuota.']);
+    echo $blade->run('principal');
 }
 

@@ -1,0 +1,22 @@
+{
+    "name": "dawdistancia/banco_soap_hipoteca_servidorsoap",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "ServSOAP\\": "src/"
+        }
+    },
+    "require-dev": {
+        "phpro/soap-client": "3.3.0",
+        "symfony/http-client": "^6.4",
+        "nyholm/psr7": "^1.8"
+    },
+    "require": {
+        "laminas/laminas-soap": "^2.14"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}

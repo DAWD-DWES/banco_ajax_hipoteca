@@ -1,7 +1,7 @@
 <?php
-/**
- * @soap
- */
+
+namespace ServSOAP;
+
 class CalculoCuotaResponse {
     /**
      * @var float

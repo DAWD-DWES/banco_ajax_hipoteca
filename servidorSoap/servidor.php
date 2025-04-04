@@ -1,8 +1,9 @@
 <?php
+require './vendor/autoload.php';
 
-$url = "http://localhost/servidorSoap/calculohipoteca.wsdl";
+$url = "http://localhost/banco_soap_hipoteca/servidorSoap/calculohipoteca.wsdl";
 
-require_once 'src\CalculoHipoteca.php';
+use ServSOAP\CalculoHipoteca;
 
 try {
     $server = new SoapServer($url);
