@@ -11,7 +11,9 @@ use App\dao\{
     ClienteDAO
 };
 use App\modelo\Banco;
-   
+use App\excepciones\ClienteNoEncontradoException;
+use App\excepciones\CuentaNoEncontradaException;
+use App\excepciones\SaldoInsuficienteException;
 use eftec\bladeone\BladeOne;
 use Dotenv\Dotenv;
 
@@ -37,7 +39,6 @@ $operacionDAO = new OperacionDAO($bd);
 $cuentaDAO = new CuentaDAO($bd, $operacionDAO);
 $clienteDAO = new ClienteDAO($bd, $cuentaDAO);
 
-
 $banco = new Banco($clienteDAO, $cuentaDAO, $operacionDAO, "Midas", [3, 1000], [1.5, 0.5]);
 
 if (filter_has_var(INPUT_POST, 'creardatos')) {
@@ -46,6 +47,23 @@ if (filter_has_var(INPUT_POST, 'creardatos')) {
 } else {
     if ($clienteDAO->numeroClientes() == 0) {
         echo $blade->run('carga_datos');
+        // Petición AJAX para obtener cuentas por DNI
+    } elseif (filter_has_var(INPUT_POST, 'accion') && filter_input(INPUT_POST, 'accion') === 'cuentasPorDni') {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $dni = filter_input(INPUT_POST, 'dni', FILTER_UNSAFE_RAW);
+
+        try {
+            $cliente = $banco->obtenerCliente($dni);
+            $cuentas = array_map((fn($idCuenta) =>
+                    ['id' => $idCuenta]), $cliente->getIdCuentas());
+            echo json_encode($cuentas);
+        } catch (ClienteNoEncontradoException $ex) {
+            echo json_encode(['error' => 'El cliente no existe en la base de datos']);
+        } catch (Exception $e) {
+            echo json_encode(['error' => 'Error inesperado en el servidor']);
+        }
+        exit;
     } elseif (filter_has_var(INPUT_POST, 'infocliente')) {
         $dni = filter_input(INPUT_POST, 'dnicliente');
         try {
@@ -68,21 +86,36 @@ if (filter_has_var(INPUT_POST, 'creardatos')) {
         }
     } elseif (filter_has_var(INPUT_GET, 'pettransferencia')) {
         echo $blade->run('transferencia');
-    } elseif (filter_has_var(INPUT_POST, 'transferencia')) {
+    } elseif (filter_has_var(INPUT_POST, 'accion') && filter_input(INPUT_POST, 'accion') === 'realizarTransferencia') {
+        header('Content-Type: application/json; charset=utf-8');
+
         try {
-            $dniClienteOrigen = filter_input(INPUT_POST, 'dniclienteorigen', FILTER_UNSAFE_RAW);
-            $idCuentaOrigen = (int) filter_input(INPUT_POST, 'idcuentaorigen', FILTER_UNSAFE_RAW);
-            $dniClienteDestino = filter_input(INPUT_POST, 'dniclientedestino', FILTER_UNSAFE_RAW);
-            $idCuentaDestino = (int) filter_input(INPUT_POST, 'idcuentadestino', FILTER_UNSAFE_RAW);
-            $cantidad = (float) filter_input(INPUT_POST, 'cantidad', FILTER_UNSAFE_RAW);
-            $asunto = filter_input(INPUT_POST, 'asunto', FILTER_UNSAFE_RAW);
+            $dniClienteOrigen = filter_input(INPUT_POST, 'dniclienteorigen');
+            $idCuentaOrigen = (int) filter_input(INPUT_POST, 'idcuentaorigen');
+            $dniClienteDestino = filter_input(INPUT_POST, 'dniclientedestino');
+            $idCuentaDestino = (int) filter_input(INPUT_POST, 'idcuentadestino');
+            $cantidad = (float) filter_input(INPUT_POST, 'cantidad');
+            $asunto = filter_input(INPUT_POST, 'asunto');
+
             $banco->realizaTransferencia($dniClienteOrigen, $dniClienteDestino, $idCuentaOrigen, $idCuentaDestino, $cantidad, $asunto);
-            $message = "Transferencia realizada con éxito";
+
+            echo json_encode([
+                "status" => "ok",
+                "mensaje" => "Transferencia realizada con éxito."
+            ]);
+        } catch (SaldoInsuficienteException $ex) {
+            echo json_encode([
+                "status" => "error",
+                "mensaje" => "Error: Saldo insuficiente en la cuenta de origen"
+            ]);
         } catch (Exception $ex) {
-            $message = $ex->getMessage();
+            echo json_encode([
+                "status" => "error",
+                "mensaje" => "Error: " . $ex->getMessage()
+            ]);
         }
-        echo $blade->run('transferencia', compact('message', 'dniClienteOrigen', 'idCuentaOrigen',
-                        'dniClienteDestino', 'idCuentaDestino', 'cantidad', 'asunto'));
+
+        exit;
     } elseif (filter_has_var(INPUT_GET, 'movimientos')) {
         $idCuenta = filter_input(INPUT_GET, 'idCuenta');
         $cuenta = $banco->obtenerCuenta($idCuenta);

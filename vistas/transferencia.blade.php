@@ -18,9 +18,9 @@
                 </div>
                 <div class="form-group mt-4">
                     <label for="idcuentaorigen" class="form-label fw-semibold">Cuenta Cliente Origen:</label>
-                    <input type="number" class="form-control" id="idcuentaorigen" name="idcuentaorigen" 
-                           value="{{ ($idCuentaOrigen ?? '') }}" required
-                           placeholder="Debe ser un número de cuenta (ej: 1234)">
+                    <select class="form-control" id="idcuentaorigen" name="idcuentaorigen" required>
+                        <option value="">Seleccione una cuenta</option>
+                    </select>
                     <small id="idcuentaorigenError" class="text-danger"></small>
                 </div>
             </div>
@@ -38,9 +38,9 @@
                 </div>
                 <div class="form-group mt-4">
                     <label for="idcuentadestino" class="form-label fw-semibold">Cuenta Cliente Destino:</label>
-                    <input type="number" class="form-control" id="idcuentadestino" name="idcuentadestino" 
-                           value="{{ ($idCuentaDestino ?? '') }}" required
-                           placeholder="Debe ser un número de cuenta (ej: 1234)">
+                    <select class="form-control" id="idcuentadestino" name="idcuentadestino" required>
+                        <option value="">Seleccione una cuenta</option>
+                    </select>
                     <small id="idcuentadestinoError" class="text-danger"></small>
                 </div>
             </div>
@@ -73,12 +73,14 @@
         {{-- Botón --}}
         <div class="text-center">
             <button type="submit" class="btn btn-primary m-5" name="transferencia">Realizar Transferencia</button>
-            <div>{{ $message ?? "" }}</div>
+            <div id="resultadoTransferencia" class="mt-3"></div>
         </div>
     </div>
 </form>
 @endsection
 
 @push('scripts')
-<script src="@asset('assets/validar.js')"></script>
+<script src="@asset('assets/js/validar.js')"></script>
+<script src="@asset('assets/js/cargarcuentas.js')"></script>
+
 @endpush
