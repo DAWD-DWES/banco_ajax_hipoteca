@@ -58,12 +58,14 @@ if (filter_has_var(INPUT_POST, 'creardatos')) {
             $cuentas = array_map((fn($idCuenta) =>
                     ['id' => $idCuenta]), $cliente->getIdCuentas());
             echo json_encode($cuentas);
+            exit;
         } catch (ClienteNoEncontradoException $ex) {
             echo json_encode(['error' => 'El cliente no existe en la base de datos']);
+            exit;
         } catch (Exception $e) {
             echo json_encode(['error' => 'Error inesperado en el servidor']);
+            exit;
         }
-        exit;
     } elseif (filter_has_var(INPUT_POST, 'infocliente')) {
         $dni = filter_input(INPUT_POST, 'dnicliente');
         try {
@@ -88,7 +90,6 @@ if (filter_has_var(INPUT_POST, 'creardatos')) {
         echo $blade->run('transferencia');
     } elseif (filter_has_var(INPUT_POST, 'accion') && filter_input(INPUT_POST, 'accion') === 'realizarTransferencia') {
         header('Content-Type: application/json; charset=utf-8');
-
         try {
             $dniClienteOrigen = filter_input(INPUT_POST, 'dniclienteorigen');
             $idCuentaOrigen = (int) filter_input(INPUT_POST, 'idcuentaorigen');
@@ -103,19 +104,20 @@ if (filter_has_var(INPUT_POST, 'creardatos')) {
                 "status" => "ok",
                 "mensaje" => "Transferencia realizada con éxito."
             ]);
+            exit;
         } catch (SaldoInsuficienteException $ex) {
             echo json_encode([
                 "status" => "error",
                 "mensaje" => "Error: Saldo insuficiente en la cuenta de origen"
             ]);
+            exit;
         } catch (Exception $ex) {
             echo json_encode([
                 "status" => "error",
                 "mensaje" => "Error: " . $ex->getMessage()
             ]);
+            exit;
         }
-
-        exit;
     } elseif (filter_has_var(INPUT_GET, 'movimientos')) {
         $idCuenta = filter_input(INPUT_GET, 'idCuenta');
         $cuenta = $banco->obtenerCuenta($idCuenta);

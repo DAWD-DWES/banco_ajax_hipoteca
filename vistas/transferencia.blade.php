@@ -63,7 +63,7 @@
                     <label for="asunto" class="form-label fw-semibold">Asunto:</label>
                     <input type="text" class="form-control" id="asunto" name="asunto" 
                            value="{{ ($asunto ?? '') }}" required
-                           pattern="^[a-zA-Z0-9ÁÉÍÓÚáéíóúñÑ\s.,:;()\-]{1,140}$"
+                           pattern="^[a-zA-Z0-9ÁÉÍÓÚáéíóúñÑ\s.,:;\(\)\-]{1,140}$"
                            placeholder="El mensaje solo puede contener letras, números y espacios. Máximo 140 cars.">
                     <small id="asuntoError" class="text-danger"></small>
                 </div>
