@@ -26,7 +26,9 @@ if (filter_has_var(INPUT_GET, 'petconsultahipoteca')) {
 
     $cuota = round($gestorHipotecas->calculoCuota($cantidad, $anyos, $tasaInteres));
     echo json_encode(['cuota' => round($cuota, 2)]);
+    exit;
 } else {
     echo json_encode(['error' => 'Información insuficiente para calcular la cuota.']);
+    exit;
 }
 
